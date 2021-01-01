@@ -5,6 +5,7 @@ namespace Story\Cli;
 use Composer\Script\Event;
 use Story\Cli\FileHandle;
 use Story\Cli\Processor\Classic as Processor;
+use Story\Cli\BeautifyMyHtml as BeautifyMyHtml;
 
 class App
 {
@@ -18,6 +19,9 @@ class App
             $fileHandle = new FileHandle();
             $processor  = new Processor($fileHandle);
 
+            $BeautifyMyHtml = new BeautifyMyHtml();
+            $BeautifyMyHtml->setTrimTagsToIgnore( true );
+
             $list = [];
 
             $files = glob("{$config['componentsDir']}/**/index.php");
@@ -29,11 +33,11 @@ class App
  
                 $fileHandle->write(
                     $file,
-                    $processor->compile($file),
+                    $BeautifyMyHtml->beautify($processor->compile($file)),
                     "{$config['componentsDir']}/_static"
                 );
             }
-
+            // TODO generate index
             $event->getIO()->write("Writing list component: <info>{$list[0]}{$list[1]}</info>");
         } catch (\Exception $e) {
             $event->getIO()->write("<error>{$e->getMessage()}</error>");
